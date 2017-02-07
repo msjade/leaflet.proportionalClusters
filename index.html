@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Leaflet Proportional Cluster Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <link rel='stylesheet' href="lib/pace.css" />
+    <link rel='stylesheet' href="style.css" />
+
+    <style>
+    html, body{
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #map{
+      height: 100%;
+      width: 100%;
+    }
+
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+      <script src="lib/pace.js"></script>
+    <script src="js/Leaflet.proportionalClusters.js"></script>
+
+    <script>
+
+
+  //create a new map
+  var map = L.map('map', {zoomControl: false, minZoom: 10}).setView([40.69339446439378, -73.9754104614258], 11);
+
+  var tiles =  L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    	subdomains: 'abcd',
+    });
+    tiles.addTo(map)
+
+    $(document).ready(function(){
+      //load data
+
+
+      d3.csv("data/data.csv", function(data){
+        data.forEach(function(d){
+          d.LATITUDE = +d.LATITUDE
+          d.LONGITUDE = +d.LONGITUDE
+        })
+        var markers = new L.ProportionalClusterGroup();
+        for (var i=0; i < 10000; i++){
+          q = data[i]
+          t = "<b>" + q.DATE + "</b><span class='text-muted'>" + q.TIME + "</span>"
+          m = new L.circleMarker(L.latLng(q['LATITUDE'], q['LONGITUDE']))
+          m.bindPopup(t)
+          markers.addLayer(m);
+        }
+        map.addLayer(markers);
+      })
+    })
+
+
+    </script>
+  </body>
+</html>
