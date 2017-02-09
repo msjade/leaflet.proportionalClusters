@@ -7,7 +7,7 @@ If so, you might want to use this code for making proportional symbol clusters i
 
 ### API Reference
 
-The options that can be passed to the ```L.proportionalClusterGroup``` constructor are largely the same as those thst can be passed to the ```L.markerClusterGroup``` constructor.
+The options that can be passed to the ```L.ProportionalClusterGroup``` constructor are largely the same as those thst can be passed to the ```L.markerClusterGroup``` constructor.
 
 - **```L.ProportionalClusterGroup(options)```**: 
 
@@ -29,7 +29,7 @@ The options that can be passed to the ```L.proportionalClusterGroup``` construct
 
 
 
-Note: I didn't write most of this code. I only modified the [Leaflet.markerCluster](https://github.com/Leaflet/Leaflet.markercluster) code to make circles proportional to the number of children in the clusters. And to make the markers ```L.circleMarker```s instead of regular ```L.marker```s. 
+***Note***: I didn't write most of this code. I only modified the [Leaflet.markerCluster](https://github.com/Leaflet/Leaflet.markercluster) code to make circles proportional to the number of children in the clusters. And to make the markers ```L.circleMarker```s instead of regular ```L.marker```s. 
 
 
 TODO: 
