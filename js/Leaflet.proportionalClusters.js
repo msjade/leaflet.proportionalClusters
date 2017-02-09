@@ -32,7 +32,7 @@ L.ProportionalClusterGroup = L.FeatureGroup.extend({
     rScale: d3.scale.linear, //radius scale
     rScaleDomain: [0, 500], //domain of radius scale
     rScaleRange: [25, 75], //range of radius values in screen pixels
-    borderRadius:1000000, //how much radius are on the resulting icons
+    borderRadius:Infinity, //how much radius are on the resulting icons
     symbolCSS: ".marker-cluster{background-color:rgba(244, 124, 0, 0.25); border: 1 thin black;}",
     textNumberOfChildren: true
   },
