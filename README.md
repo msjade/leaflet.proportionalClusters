@@ -7,6 +7,11 @@ Do you have a lot of points that need to be clustered? Do you want to represent 
 If so, you might want to use this code for making proportional symbol clusters in Leaflet. It is an exension of the [Leaflet.markerCluster](https://github.com/Leaflet/Leaflet.markercluster) library that uses the number of children inside of a cluster (already calculated in ```L.markerCluster```) to dynamically set the radius of the symbol. The numeric label has been removed, though the sybmol can still be stilled via CSS.
 
 
+TODO: 
 
+- Symbolize by Value
+- Better CSS styling with jquery
+- Remove dependency on CSS
+- Automatically create ```CircleMarkers``` instead of passing in pre-created markers? 
 
 
