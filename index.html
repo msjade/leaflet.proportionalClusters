@@ -30,7 +30,6 @@
 
     <script>
 
-
   //create a new map
   var map = L.map('map', {zoomControl: false, minZoom: 10}).setView([40.69339446439378, -73.9754104614258], 11);
 
@@ -49,10 +48,40 @@
           d.LATITUDE = +d.LATITUDE
           d.LONGITUDE = +d.LONGITUDE
         })
-        var markers = new L.ProportionalClusterGroup();
-        for (var i=0; i < 10000; i++){
+
+
+        var symbolOptions = {
+          maxRadius: 150, //max number of pixels between points that should be clustered
+          spiderfyOnMaxZoom: true, //break out the points on maximum map zoom
+          showCoverageOnHover: false, //show the geographic extent of the clusters on mouse hover
+          zoomToBoundsOnClick: true, //zoom the geographic extent of the clusters on mouse click
+          singleMarkerMode: false,
+          disableClusteringAtZoom: null, //zoom level at which to stop clustering
+          removeOutsideVisibleBounds: true, //improves performance by removing clusters outside of the current view
+          animate: true, //animate events
+          animateAddingMarkers: true, //animate marker add events
+          spiderfyDistanceMultiplier: 1, //how far to separate spiderified cluster members
+          spiderLegPolylineOptions: { //styling of the spiders
+            weight: 1.5,
+            color: '#222',
+            opacity: 0.5 },
+          chunkedLoading: true, //load the data incrementally
+          chunkInterval: 50, // process markers for a maximum of ~ n milliseconds (then trigger the chunkProgress callback)
+          chunkDelay: 50, // at the end of each interval, give n milliseconds back to system/browser
+          chunkProgress: null, // progress callback: function(processed, total, elapsed) (e.g. for a progress indicator)
+          polygonOptions: {},//Options to pass to the L.Polygon constructor
+          rScale: d3.scale.linear, //radius scale
+          rScaleDomain: [0, 500], //domain of radius scale
+          rScaleRange: [25, 75], //range of radius values in screen pixels
+          borderRadius:1000000, //how much radius are on the resulting icons
+          symbolCSS: ".marker-cluster{background-color:rgba(244, 124, 0, 0.25); border: 1 thin black;}",
+          textNumberOfChildren: false
+        }
+
+        var markers = new L.ProportionalClusterGroup(symbolOptions);
+        for (var i=0; i < 100; i++){
           q = data[i]
-          t = "<b>" + q.DATE + "</b><span class='text-muted'>" + q.TIME + "</span>"
+          t = "<span class='glypihcon '<b>" + q.DATE + "</b><br  /><span class='text-muted'>" + q.TIME + "</span>"
           m = new L.circleMarker(L.latLng(q['LATITUDE'], q['LONGITUDE']))
           m.bindPopup(t)
           markers.addLayer(m);

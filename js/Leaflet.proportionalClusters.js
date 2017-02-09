@@ -7,60 +7,48 @@
  * L.ProportionalClusterGroup extends L.FeatureGroup by clustering the markers contained within
  */
 
-var symbolOptions = {
-  maxRadius: 150, //max number of pixels between points that should be clustered
-  spiderfyOnMaxZoom: true, //break out the points on maximum map zoom
-  showCoverageOnHover: false, //show the geographic extent of the clusters on mouse hover
-  zoomToBoundsOnClick: true, //zoom the geographic extent of the clusters on mouse click
-  singleMarkerMode: false,
-  disableClusteringAtZoom: null, //zoom level at which to stop clustering
-  removeOutsideVisibleBounds: true, //improves performance by removing clusters outside of the current view
-  animate: true, //animate events
-  animateAddingMarkers: true, //animate marker add events
-  spiderfyDistanceMultiplier: 1, //how far to separate spiderified cluster members
-  spiderLegPolylineOptions: { //styling of the spiders
-    weight: 1.5,
-    color: '#222',
-    opacity: 0.5 },
-  chunkedLoading: true, //load the data incrementally
-  chunkInterval: 50, // process markers for a maximum of ~ n milliseconds (then trigger the chunkProgress callback)
-  chunkDelay: 50, // at the end of each interval, give n milliseconds back to system/browser
-  chunkProgress: null, // progress callback: function(processed, total, elapsed) (e.g. for a progress indicator)
-  polygonOptions: {},//Options to pass to the L.Polygon constructor
-  rScale: d3.scale.linear, //radius scale
-  rScaleDomain: [0, 500], //domain of radius scale
-  rScaleRange: [25, 75], //range of radius values in screen pixels
-  borderRadius:1000000, //how much radius are on the resulting icons
-  symbolCSS: ".marker-cluster{background-color:rgba(244, 124, 0, 0.25); border: 1 thin black;}"
-}
+
 
 L.ProportionalClusterGroup = L.FeatureGroup.extend({
 
-	options: {
-		maxClusterRadius: symbolOptions.maxRadius,
-		iconCreateFunction: null,
-		spiderfyOnMaxZoom: symbolOptions.spiderfyOnMaxZoom,
-		showCoverageOnHover: symbolOptions.showCoverageOnHover,
-		zoomToBoundsOnClick: symbolOptions.zoomToBoundsOnClick,
-		singleMarkerMode: symbolOptions.singleMarkerMode,
-		disableClusteringAtZoom: symbolOptions.disableClusteringAtZoom,
-		removeOutsideVisibleBounds: symbolOptions.removeOutsideVisibleBounds,
-		animate: symbolOptions.animate,
-		animateAddingMarkers: symbolOptions.animateAddingMarkers,
-		spiderfyDistanceMultiplier: symbolOptions.spiderfyDistanceMultiplier,
-		spiderLegPolylineOptions: symbolOptions.spiderLegPolylineOptions,
-    chunkedLoading: symbolOptions.chunkedLoading,
-		chunkInterval: symbolOptions.chunkInterval,
-		chunkDelay: symbolOptions.chunkInterval,
-		chunkProgress: symbolOptions.chunkProgress,
-		polygonOptions: symbolOptions.polygonOptions
-	},
+  default: {
+    maxClusterRadius: 100,
+    iconCreateFunction: null,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    singleMarkerMode: false,
+    disableClusteringAtZoom: false,
+    removeOutsideVisibleBounds: true,
+    animate: true,
+    animateAddingMarkers: true,
+    spiderfyDistanceMultiplier: 1,
+    spiderLegPolylineOptions: {},
+    chunkedLoading: true,
+    chunkInterval: 50,
+    chunkDelay: 50,
+    chunkProgress: function(d){return},
+    polygonOptions: {},
+    rScale: d3.scale.linear, //radius scale
+    rScaleDomain: [0, 500], //domain of radius scale
+    rScaleRange: [25, 75], //range of radius values in screen pixels
+    borderRadius:1000000, //how much radius are on the resulting icons
+    symbolCSS: ".marker-cluster{background-color:rgba(244, 124, 0, 0.25); border: 1 thin black;}",
+    textNumberOfChildren: true
+  },
+
+
 
 	initialize: function (options) {
+
+    //overwrite default options with user assigned arguements
+    options = Object.assign({}, this.default, options)
+
 		L.Util.setOptions(this, options);
-		if (!this.options.iconCreateFunction) {
-			this.options.iconCreateFunction = this._defaultIconCreateFunction;
-		}
+
+
+    this.options.iconCreateFunction = this.createProportionalIcons;
+
 
 		this._featureGroup = L.featureGroup();
 		this._featureGroup.addEventParent(this);
@@ -82,7 +70,7 @@ L.ProportionalClusterGroup = L.FeatureGroup.extend({
 		// Remember which ProportionalCluster class to instantiate (animated or not).
 		this._proportionalCluster = animate ? L.ProportionalCluster : L.ProportionalClusterNonAnimated;
     if ($ != undefined){
-        $("head").append("<style> " + symbolOptions.symbolCSS + "</style>")
+        $("head").append("<style> " + this.options.symbolCSS + "</style>")
     }
 	},
 
@@ -766,20 +754,25 @@ L.ProportionalClusterGroup = L.FeatureGroup.extend({
 	},
 
 	//Default functionality
-	_defaultIconCreateFunction: function (cluster) {
+	createProportionalIcons: function (cluster) {
 		var childCount = cluster.getChildCount();
 
-    this.sizeScale = symbolOptions.rScale()
-      .domain(symbolOptions.rScaleDomain)
-      .range(symbolOptions.rScaleRange)
+    this.sizeScale = this.rScale()
+      .domain(this.rScaleDomain)
+      .range(this.rScaleRange)
 
     this.radius = this.sizeScale(childCount)
 
-
     iconOpts = {
-      html: '',
-      className: 'marker-cluster',
-      iconSize: new L.Point(this.radius, this.radius) }
+      className: 'marker-cluster proportional-cluster',
+      iconSize: new L.Point(this.radius, this.radius)  //this is where the magic happens
+    }
+
+    if (this.textNumberOfChildren){
+      iconOpts.html = "<span class='annotation'>" + childCount + "</span>"
+    }else{
+      iconOpts.html = ""
+    }
 
 		return new L.DivIcon(iconOpts);
 	},
